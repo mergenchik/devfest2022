@@ -1,6 +1,8 @@
 swagger: "2.0"
 info:
-  title: Sample API for GDG DevFest 2022
+  title: Sample Report API for GDG DevFest 2022
+  description: This API shows how Synchronous endpoint 
+    can be converted to Asynchronous
   version: 0.1.0
 schemes:
 - "https"

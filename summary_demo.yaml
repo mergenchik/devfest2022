@@ -1,0 +1,148 @@
+swagger: "2.0"
+info:
+  title: Sample Summary API for GDG DevFest 2022
+  description: This API shows usage of summary endpoints.
+    Let's assume that initialy we have three endpoints to
+    get information about user, his notes and his bookmarks.
+    Imagine that we design User page, which will have user's 
+    information, notes and bookmarks displayed all in one place.
+    To show that information, 3 API calls should be done.
+    With summary endpoint, it will bring all information needed
+    in one API call.
+  version: 0.1.0
+
+schemes:
+- 'https'
+
+paths:
+  /user/info/{user_id}:
+    get:
+      summary: Get User info
+      parameters:
+      - in: path
+        name: user_id
+        description: The user id
+        type: integer
+        required: true
+      responses:
+        "404":
+          description: not found
+        "403":
+          description: access to user not allowed
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/User'
+  /user/notes/{user_id}:
+    get:
+      summary: Get User Notes
+      parameters:
+      - in: path
+        name: user_id
+        description: The user id
+        type: integer
+        required: true
+      responses:
+        "404":
+          description: not found
+        "403":
+          description: access to user notes not allowed
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Note'
+  /user/bookmarks/{user_id}:
+    get:
+      summary: Get User Bookmarks
+      parameters:
+      - in: path
+        name: user_id
+        description: The user id
+        type: integer
+        required: true
+      responses:
+        "404":
+          description: not found
+        "403":
+          description: access to user bookmarks not allowed
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Bookmark'
+  /user/detail/{user_id}:
+    get:
+      summary: Get User Details (info, notes, bookmarks)
+      parameters:
+      - in: path
+        name: user_id
+        description: The user id
+        type: integer
+        required: true
+      responses:
+        "404":
+          description: not found
+        "403":
+          description: access to user details not allowed
+        "200":
+          description: OK
+          schema:
+            type: object
+            properties:
+              user:
+                $ref: '#/definitions/User'
+              notes:
+                type: array
+                items: 
+                  $ref: '#/definitions/Note'
+              bookmarks:
+                type: array
+                items: 
+                  $ref: '#/definitions/Bookmark'
+
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: The user id
+      username:
+        type: string
+        description: The username
+      role:
+        type: string
+        description: The user role
+        enum: ['admin', 'accounting', 'client']
+  Note:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        description: The note id
+      owner:
+        type: integer
+        description: The user id of note owner
+      contents:
+        type: string
+  Bookmark:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        description: The bookmark id
+      owner:
+        type: integer
+        description: The user id of bookmark owner
+      title:
+        type: string
+        description: The bookmark title
+      url:
+        type: string
+        format: url
+        description: The bookmark url
