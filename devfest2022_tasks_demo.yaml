@@ -1,0 +1,139 @@
+swagger: "2.0"
+info:
+  title: Sample API for GDG DevFest 2022
+  version: 0.1.0
+schemes:
+- "https"
+paths:
+  /report/sync:
+    get:
+      summary: Generate Transaction Report Sync
+      parameters:
+      - in: query
+        name: start
+        description: start timestamp
+        type: string
+        format: date
+        required: true
+      - in: query
+        name: end
+        description: end timestamp
+        type: string
+        format: date
+        required: true
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+                count:
+                  type: integer
+                  description: transactions count
+                amount:
+                  type: integer
+                  format: money
+                  description: transactions total amount
+  /report/async:
+    post:
+      summary: Generate Transaction Report Async
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - in: formData
+          name: sid
+          description: source id of report
+          type: string
+          format: uuid
+          required: true
+        - in: formData
+          name: start
+          description: start timestamp
+          type: string
+          format: date
+          required: true
+        - in: formData
+          name: end
+          description: end timestamp
+          type: string
+          format: date
+          required: true
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+            properties:
+              task_id:
+                description: Task id assigned to the requested report
+                type: integer
+        "409":
+          description: Conflict, task with same source id already exists
+          schema:
+            type: object
+            properties:
+              task_id:
+                description: Task id assigned to the requested report
+                type: integer
+              start:
+                description: start timestamp of
+                  request with source id provided
+                type: string
+                format: date
+              end:
+                description: end timestamp of request with source id provided
+                type: string
+                format: date
+  /report/status/{task_id}:
+    get:
+      summary: Get Task Status
+      parameters:
+        - in: path
+          name: task_id
+          description: task id returned from /report/async
+          type: integer
+          required: true
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+            required: ['status']
+            properties:
+              status:
+                type: string
+                enum: ['processing', 'failed', 'completed']
+              failed_reason:
+                type: string
+  /report/result/{task_id}:
+    get:
+      summary: Get Task Results
+      parameters:
+        - in: path
+          name: task_id
+          description: task id returned from /report/async
+          type: integer
+          required: true
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+                count:
+                  type: integer
+                  description: transactions count
+                amount:
+                  type: integer
+                  format: money
+                  description: transactions total amount
